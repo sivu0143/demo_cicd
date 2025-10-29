@@ -1,0 +1,167 @@
+{
+  "namespace": "ecommerce",
+  "definitions": {
+    "ecommerce.products": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "name": {
+          "type": "cds.String"
+        },
+        "price": {
+          "type": "cds.Decimal",
+          "precision": 9,
+          "scale": 2
+        },
+        "stock": {
+          "type": "cds.Integer"
+        }
+      }
+    },
+    "ecommerce.Orders": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "productID": {
+          "type": "cds.Association",
+          "target": "ecommerce.products",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "Quantity": {
+          "type": "cds.Integer"
+        },
+        "Total": {
+          "type": "cds.Decimal",
+          "precision": 9,
+          "scale": 2
+        }
+      }
+    },
+    "CatalogService": {
+      "@source": "srv/cat-service.cds",
+      "kind": "service"
+    },
+    "CatalogService.products": {
+      "kind": "entity",
+      "projection": {
+        "from": {
+          "ref": [
+            "ecommerce.products"
+          ]
+        }
+      },
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "name": {
+          "type": "cds.String"
+        },
+        "price": {
+          "type": "cds.Decimal",
+          "precision": 9,
+          "scale": 2
+        },
+        "stock": {
+          "type": "cds.Integer"
+        }
+      }
+    },
+    "CatalogService.Orders": {
+      "kind": "entity",
+      "projection": {
+        "from": {
+          "ref": [
+            "ecommerce.Orders"
+          ]
+        }
+      },
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "productID": {
+          "type": "cds.Association",
+          "target": "CatalogService.products",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "Quantity": {
+          "type": "cds.Integer"
+        },
+        "Total": {
+          "type": "cds.Decimal",
+          "precision": 9,
+          "scale": 2
+        }
+      }
+    },
+    "cds.outbox.Messages": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "timestamp": {
+          "type": "cds.Timestamp"
+        },
+        "target": {
+          "type": "cds.String"
+        },
+        "msg": {
+          "type": "cds.LargeString"
+        },
+        "attempts": {
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "partition": {
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "lastError": {
+          "type": "cds.LargeString"
+        },
+        "lastAttemptTimestamp": {
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "type": "cds.Timestamp"
+        },
+        "status": {
+          "type": "cds.String",
+          "length": 23
+        }
+      }
+    }
+  },
+  "meta": {
+    "creator": "CDS Compiler v6.4.6",
+    "flavor": "inferred"
+  },
+  "$version": "2.0"
+}
